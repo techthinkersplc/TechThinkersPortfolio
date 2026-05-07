@@ -43,20 +43,20 @@ function Contact() {
     e.preventDefault();
     setLoading(true);
 
-    // --- TELEGRAM CONFIGURATION UPDATED ---
-    // Your Bot Token from @BotFather
+    // --- TELEGRAM CONFIGURATION ---
     const BOT_TOKEN = "8632138643:AAGk9Qwwqa2nkKpL3ae8XJdKg2pZL_B0B6Q";
-    // The new Chat ID for @TechThinkers07
     const CHAT_ID = "8653703609";
     const TELEGRAM_URL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
     if (formRef.current) {
       const formData = new FormData(formRef.current);
-      // Formatting the message for Telegram
+      
+      // Formatting the message to include the PHONE field
       const messageText = `
 <b>🚀 New Inquiry: Tech Thinkers</b>
 <b>Name:</b> ${formData.get("name")}
 <b>Email:</b> ${formData.get("email")}
+<b>Phone:</b> ${formData.get("phone")}
 <b>Company:</b> ${formData.get("company") || "N/A"}
 <b>Subject:</b> ${formData.get("subject")}
 <b>Message:</b> ${formData.get("message")}
@@ -78,11 +78,12 @@ function Contact() {
           setLoading(false);
           formRef.current.reset();
         } else {
-          throw new Error("Failed to send to Telegram");
+          const errorData = await response.json();
+          throw new Error(errorData.description || "Failed to send");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("TELEGRAM ERROR:", error);
-        alert("Something went wrong. Please try again or email us directly.");
+        alert(`Error: ${error.message}. Please check your connection or try again.`);
         setLoading(false);
       }
     }
@@ -163,18 +164,8 @@ function Contact() {
                     />
                   </div>
                 ))}
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-2 ml-1">
-                    Project Details
-                  </label>
-                  <textarea
-                    required
-                    name="message"
-                    rows={4}
-                    placeholder="Tell us about your goals and timeline..."
-                    className="w-full bg-secondary/20 border border-border/50 rounded-2xl px-5 py-4 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all resize-none"
-                  />
-                </div>
+                
+                {/* Phone Number Input */}
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-2 ml-1">
                     Phone Number
@@ -185,6 +176,19 @@ function Contact() {
                     name="phone"
                     placeholder="+251 9..."
                     className="w-full bg-secondary/20 border border-border/50 rounded-2xl px-5 py-4 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-2 ml-1">
+                    Project Details
+                  </label>
+                  <textarea
+                    required
+                    name="message"
+                    rows={4}
+                    placeholder="Tell us about your goals and timeline..."
+                    className="w-full bg-secondary/20 border border-border/50 rounded-2xl px-5 py-4 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all resize-none"
                   />
                 </div>
 
